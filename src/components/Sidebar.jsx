@@ -2,16 +2,19 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   BsBarChart, BsCpu, BsPlug, BsGear,
-  BsShieldCheck, BsChevronDown, BsChevronUp
+  BsShieldCheck, BsChevronDown, BsChevronUp, BsHeadset
 } from "react-icons/bs";
 import { FaRegMoon, FaRegSun } from "react-icons/fa";
+import UserMenu from "./UserMenu"; // ⬅️ tambah menu user (logout)
 
 export default function Sidebar({ dark, toggleDark }) {
   const [chartsOpen, setChartsOpen] = useState(false);
+  const [helpdeskOpen, setHelpdeskOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     if (location.pathname.startsWith("/charts")) setChartsOpen(true);
+    if (location.pathname.startsWith("/helpdesk")) setHelpdeskOpen(true);
   }, [location.pathname]);
 
   return (
@@ -34,7 +37,8 @@ export default function Sidebar({ dark, toggleDark }) {
             style={{ background: "white" }}
           />
           <span className="ml-4 text-xl font-bold text-[#215ba6] dark:text-white tracking-wide leading-tight">
-            Waskita Karya<br />Infrastruktur<br /><span className="font-normal">IT Asset<br />Management</span>
+            Waskita Karya<br />Infrastruktur<br />
+            <span className="font-normal">IT Asset<br />Management</span>
           </span>
         </div>
 
@@ -51,6 +55,7 @@ export default function Sidebar({ dark, toggleDark }) {
           >
             <BsBarChart className="mr-4" /> Dashboard
           </NavLink>
+
           <NavLink
             to="/devices"
             className={({ isActive }) =>
@@ -62,6 +67,7 @@ export default function Sidebar({ dark, toggleDark }) {
           >
             <BsCpu className="mr-4" /> Devices
           </NavLink>
+
           <NavLink
             to="/peripheral"
             className={({ isActive }) =>
@@ -73,6 +79,7 @@ export default function Sidebar({ dark, toggleDark }) {
           >
             <BsPlug className="mr-4" /> Peripheral
           </NavLink>
+
           <NavLink
             to="/licenses"
             className={({ isActive }) =>
@@ -84,6 +91,48 @@ export default function Sidebar({ dark, toggleDark }) {
           >
             <BsShieldCheck className="mr-4" /> Licenses
           </NavLink>
+
+          {/* Helpdesk dropdown — route tetap dilindungi guard, menu selalu tampil */}
+          <button
+            className={
+              "flex items-center px-6 py-3 text-lg font-medium rounded-r-full transition focus:outline-none w-full " +
+              (location.pathname.startsWith("/helpdesk")
+                ? "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
+                : "text-gray-800 dark:text-gray-100")
+            }
+            onClick={() => setHelpdeskOpen((o) => !o)}
+          >
+            <BsHeadset className="mr-4" />
+            Helpdesk
+            {helpdeskOpen ? <BsChevronUp className="ml-auto" /> : <BsChevronDown className="ml-auto" />}
+          </button>
+          {helpdeskOpen && (
+            <div className="ml-8 flex flex-col">
+              <NavLink
+                to="/helpdesk/entry"
+                className={({ isActive }) =>
+                  (isActive
+                    ? "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
+                    : "text-gray-800 dark:text-gray-100") +
+                  " px-3 py-2 text-base rounded-lg transition"
+                }
+              >
+                Ticket Entry
+              </NavLink>
+              <NavLink
+                to="/helpdesk/solved"
+                className={({ isActive }) =>
+                  (isActive
+                    ? "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
+                    : "text-gray-800 dark:text-gray-100") +
+                  " px-3 py-2 text-base rounded-lg transition"
+                }
+              >
+                Ticket Solved
+              </NavLink>
+            </div>
+          )}
+
           {/* Charts dropdown */}
           <button
             className={
@@ -135,7 +184,7 @@ export default function Sidebar({ dark, toggleDark }) {
               </NavLink>
             </div>
           )}
-          {/* End charts dropdown */}
+
           <NavLink
             to="/settings"
             className={({ isActive }) =>
@@ -148,17 +197,24 @@ export default function Sidebar({ dark, toggleDark }) {
             <BsGear className="mr-4" /> Settings
           </NavLink>
         </nav>
-        {/* Toggle Dark Mode */}
-        <div className="flex items-center justify-center p-4 mt-auto">
-          <button
-            className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-            onClick={toggleDark}
-          >
-            {dark ? <FaRegSun size={21} /> : <FaRegMoon size={20} />}
-          </button>
-          <span className="ml-3 text-sm text-gray-600 dark:text-gray-300">
-            {dark ? "Light" : "Dark"} Mode
-          </span>
+
+        {/* Footer: Dark Mode + UserMenu (Logout) */}
+        <div className="p-4 mt-auto flex flex-col gap-3">
+          <div className="flex items-center justify-center">
+            <button
+              className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+              onClick={toggleDark}
+              title="Toggle tema"
+            >
+              {dark ? <FaRegSun size={21} /> : <FaRegMoon size={20} />}
+            </button>
+            <span className="ml-3 text-sm text-gray-600 dark:text-gray-300">
+              {dark ? "Light" : "Dark"} Mode
+            </span>
+          </div>
+          <div className="flex justify-center">
+            <UserMenu />
+          </div>
         </div>
       </div>
     </aside>
